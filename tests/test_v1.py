@@ -1,6 +1,6 @@
 import pytest
 from app.dependencies import get_session
-from app.main import app
+from app.main import create_app
 from app.models import Movie
 from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel, create_engine
@@ -22,6 +22,7 @@ def client_fixture(session: Session):
     def get_session_override():
         return session
 
+    app = create_app(enable_rate_limiter=False)
     app.dependency_overrides[get_session] = get_session_override
     client = TestClient(app)
     yield client

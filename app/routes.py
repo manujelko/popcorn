@@ -44,7 +44,7 @@ async def show_movie(
     movie = session.get(Movie, movie_id)
     if not movie:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Movie not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Movie Not Found"
         )
     return movie
 
@@ -60,7 +60,7 @@ async def update_movie(
     db_movie = session.get(Movie, movie_id)
     if not db_movie:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Movie not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Movie Not Found"
         )
     movie_data = movie.model_dump(exclude_unset=True)
     for key, value in movie_data.items():
@@ -81,7 +81,7 @@ async def delete_movie(
     movie = session.get(Movie, movie_id)
     if not movie:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Movie not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Movie Not Found"
         )
     session.delete(movie)
     session.commit()
