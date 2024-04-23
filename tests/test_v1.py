@@ -1,5 +1,7 @@
 import pytest
-from app.main import Movie, app, get_session
+from app.dependencies import get_session
+from app.main import app
+from app.models import Movie
 from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
