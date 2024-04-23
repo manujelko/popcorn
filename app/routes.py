@@ -15,7 +15,7 @@ async def healthcheck() -> dict[str, str]:
 
 
 @router.get("/movies", response_model=list[MoviePublic])
-async def list_movies(
+def list_movies(
     *,
     session: Session = Depends(get_session),
     offset: int = 0,
@@ -27,7 +27,7 @@ async def list_movies(
 
 
 @router.post("/movies", response_model=MoviePublic)
-async def create_movie(*, session: Session = Depends(get_session), movie: MovieCreate):
+def create_movie(*, session: Session = Depends(get_session), movie: MovieCreate):
     """Create a new movie."""
     db_movie = Movie.model_validate(movie)
     session.add(db_movie)
@@ -37,7 +37,7 @@ async def create_movie(*, session: Session = Depends(get_session), movie: MovieC
 
 
 @router.get("/movies/{movie_id}", response_model=MoviePublic)
-async def show_movie(
+def show_movie(
     *, session: Session = Depends(get_session), movie_id: int = Path(..., ge=1)
 ):
     """Show the details of a specific movie."""
@@ -50,7 +50,7 @@ async def show_movie(
 
 
 @router.patch("/movies/{movie_id}", response_model=MoviePublic)
-async def update_movie(
+def update_movie(
     *,
     session: Session = Depends(get_session),
     movie_id: int = Path(..., ge=1),
@@ -72,7 +72,7 @@ async def update_movie(
 
 
 @router.delete("/movies/{movie_id}")
-async def delete_movie(
+def delete_movie(
     *,
     session: Session = Depends(get_session),
     movie_id: int = Path(ge=1),
