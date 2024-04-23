@@ -1,0 +1,5 @@
+-r production.txt
+httpx
+mypy
+pytest
+ruff
