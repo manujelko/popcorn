@@ -3,3 +3,5 @@ httpx
 mypy
 pytest
 ruff
+types-passlib
+types-python-jose

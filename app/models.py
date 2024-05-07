@@ -32,3 +32,28 @@ class MovieUpdate(SQLModel):
     title: str | None = None
     year: int | None = None
     runtime: int | None = None
+
+
+class UserBase(SQLModel):
+    username: str
+    email: str | None = None
+    full_name: str | None = None
+    disabled: bool | None = None
+
+
+class User(UserBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    hashed_password: str
+
+
+class UserPublic(UserBase):
+    id: int
+
+
+class Token(SQLModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(SQLModel):
+    username: str | None = None

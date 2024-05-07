@@ -1,10 +1,11 @@
 import pytest
-from app.dependencies import get_session
-from app.main import create_app
-from app.models import Movie
 from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
+
+from app.dependencies import get_session
+from app.main import create_app
+from app.models import Movie
 
 
 @pytest.fixture(name="session")
