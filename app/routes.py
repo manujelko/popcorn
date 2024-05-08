@@ -1,5 +1,4 @@
 import datetime as dt
-import logging
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
@@ -21,8 +20,6 @@ from .models import (
 )
 from .security import authenticate_user, create_access_token
 
-logger = logging.getLogger("uvicorn")
-
 router = APIRouter(prefix="/v1")
 
 
@@ -40,13 +37,9 @@ async def list_movies(
     limit: int = Query(default=100, le=100),
 ):
     """Show the details of all movies."""
-    try:
-        result = await session.exec(select(Movie).offset(offset).limit(limit))
-        movies = result.all()
-        return movies
-    except Exception as e:
-        logger.exception(str(e))
-        raise e
+    result = await session.exec(select(Movie).offset(offset).limit(limit))
+    movies = result.all()
+    return movies
 
 
 @router.post("/movies", response_model=MoviePublic)
