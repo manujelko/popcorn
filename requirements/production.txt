@@ -1,4 +1,6 @@
+aiosqlite
 fastapi
+greenlet
 passlib[bcrypt]
 python-dotenv
 python-jose[cryptography]

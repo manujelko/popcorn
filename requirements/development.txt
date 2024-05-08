@@ -1,4 +1,5 @@
 -r production.txt
+anyio[trio]
 httpx
 mypy
 pytest

@@ -3,7 +3,8 @@ import datetime as dt
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
 from passlib.context import CryptContext
-from sqlmodel import Session, select
+from sqlmodel import select
+from sqlmodel.ext.asyncio.session import AsyncSession
 from zoneinfo import ZoneInfo
 
 from .env import ALGORITHM, SECRET_KEY
@@ -17,8 +18,11 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
 
-def authenticate_user(username: str, password: str, *, session: Session) -> User | None:
-    user = session.exec(select(User).where(User.username == username)).first()
+async def authenticate_user(
+    username: str, password: str, *, session: AsyncSession
+) -> User | None:
+    result = await session.exec(select(User).where(User.username == username))
+    user = result.first()
     if not user:
         return None
     if not verify_password(password, user.hashed_password):

@@ -1,8 +1,9 @@
-from typing import Annotated
+from typing import Annotated, AsyncGenerator
 
 from fastapi import Depends, HTTPException, status
 from jose import JWTError, jwt
 from sqlmodel import Session, select
+from sqlmodel.ext.asyncio.session import AsyncSession
 
 from .database import engine
 from .env import ALGORITHM, SECRET_KEY
@@ -10,8 +11,8 @@ from .models import User
 from .security import oauth2_scheme
 
 
-def get_session():
-    with Session(engine) as session:
+async def get_session() -> AsyncGenerator[AsyncSession, None]:
+    async with AsyncSession(engine) as session:
         yield session
 
 
