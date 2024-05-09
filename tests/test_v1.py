@@ -2,17 +2,16 @@ from typing import AsyncGenerator
 
 import pytest
 from fastapi import FastAPI
-from httpx import AsyncClient
+from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel import Session, SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel.pool import StaticPool
 
+from app import version
 from app.dependencies import get_session
 from app.main import create_app
 from app.models import Movie
-
-pytestmark = pytest.mark.anyio
 
 
 @pytest.fixture()
@@ -42,10 +41,24 @@ async def app(session: Session) -> AsyncGenerator[FastAPI, None]:
 
 @pytest.fixture()
 async def client(app: FastAPI) -> AsyncGenerator[AsyncClient, None]:
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    async with AsyncClient(
+        transport=ASGITransport(app=app),  # type: ignore
+        base_url="http://test",
+    ) as client:
         yield client
 
 
+@pytest.mark.anyio
+async def test_healthcheck(client: AsyncClient) -> None:
+    response = await client.get("/v1/healthcheck")
+    data = response.json()
+    assert response.status_code == 200
+    assert data["status"] == "available"
+    assert data["version"] == version
+    assert data["environment"] == "DEVELOPMENT"
+
+
+@pytest.mark.anyio
 async def test_create_movie(client: AsyncClient) -> None:
     response = await client.post(
         "/v1/movies", json={"title": "Moana", "year": 2016, "runtime": 107}
@@ -58,11 +71,13 @@ async def test_create_movie(client: AsyncClient) -> None:
     assert data["runtime"] == 107
 
 
+@pytest.mark.anyio
 async def test_create_movie_incomplete(client: AsyncClient) -> None:
     response = await client.post("/v1/movies", json={"title": "Moana"})
     assert response.status_code == 422
 
 
+@pytest.mark.anyio
 async def test_read_movies(session: AsyncSession, client: AsyncClient):
     movie_1 = Movie(title="Moana", year=2016, runtime=107)
     movie_2 = Movie(title="The Martian", year=2015, runtime=151)
@@ -86,6 +101,7 @@ async def test_read_movies(session: AsyncSession, client: AsyncClient):
     assert data[1]["id"] == 2
 
 
+@pytest.mark.anyio
 async def test_read_movie(session: AsyncSession, client: AsyncClient):
     movie = Movie(title="Moana", year=2016, runtime=107)
     session.add(movie)
@@ -102,6 +118,7 @@ async def test_read_movie(session: AsyncSession, client: AsyncClient):
     assert data["id"] == movie.id
 
 
+@pytest.mark.anyio
 async def test_update_movie(session: AsyncSession, client: AsyncClient) -> None:
     movie = Movie(title="Moana", year=2015, runtime=107)
     session.add(movie)
@@ -118,6 +135,7 @@ async def test_update_movie(session: AsyncSession, client: AsyncClient) -> None:
     assert data["id"] == movie.id
 
 
+@pytest.mark.anyio
 async def test_delete_movie(session: AsyncSession, client: AsyncClient) -> None:
     movie = Movie(title="Moana", year=2015, runtime=107)
     session.add(movie)

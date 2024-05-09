@@ -8,7 +8,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from . import version
 from .dependencies import get_current_active_user, get_session
-from .env import ACCESS_TOKEN_EXPIRE_MINUTES
+from .env import ACCESS_TOKEN_EXPIRE_MINUTES, ENVIRONMENT
 from .log import logger
 from .models import (
     Movie,
@@ -28,7 +28,7 @@ router = APIRouter(prefix="/v1")
 async def healthcheck() -> dict[str, str]:
     """Show routerlication information."""
     await logger.adebug("This is a test log", hello="world")
-    return {"status": "available", "version": version}
+    return {"status": "available", "version": version, "environment": ENVIRONMENT}
 
 
 @router.get("/movies", response_model=list[MoviePublic])

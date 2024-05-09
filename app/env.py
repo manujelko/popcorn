@@ -73,3 +73,8 @@ LOG_LEVEL: str = getenv(
     default="INFO",
     allowed_values=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
 )
+ENVIRONMENT: str = getenv(
+    "ENVIRONMENT",
+    default="DEVELOPMENT",
+    allowed_values=["DEVELOPMENT", "STAGING", "PRODUCTION"],
+)
