@@ -1,14 +1,15 @@
 import datetime as dt
+from zoneinfo import ZoneInfo
 
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
 from passlib.context import CryptContext
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
-from zoneinfo import ZoneInfo
+
+from app.models.users import User
 
 from .env import ALGORITHM, SECRET_KEY
-from .models import User
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/v1/token")

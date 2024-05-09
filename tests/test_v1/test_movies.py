@@ -1,58 +1,16 @@
-from typing import AsyncGenerator
-
 import pytest
-from fastapi import FastAPI
-from httpx import ASGITransport, AsyncClient
-from sqlalchemy.ext.asyncio import create_async_engine
-from sqlmodel import Session, SQLModel
+from httpx import AsyncClient
 from sqlmodel.ext.asyncio.session import AsyncSession
-from sqlmodel.pool import StaticPool
 
 from app import version
-from app.dependencies import get_session
-from app.main import create_app
-from app.models import Movie
-
-
-@pytest.fixture()
-async def session() -> AsyncGenerator[AsyncSession, None]:
-    sqlite_url = "sqlite+aiosqlite://"
-    engine = create_async_engine(
-        sqlite_url,
-        connect_args={"check_same_thread": False},
-        poolclass=StaticPool,
-    )
-    async with engine.begin() as conn:
-        await conn.run_sync(SQLModel.metadata.create_all)
-    async with AsyncSession(engine) as session:
-        yield session
-
-
-@pytest.fixture()
-async def app(session: Session) -> AsyncGenerator[FastAPI, None]:
-    def get_session_override():
-        return session
-
-    app_ = create_app(enable_rate_limiter=False)
-    app_.dependency_overrides[get_session] = get_session_override
-    yield app_
-    app_.dependency_overrides.clear()
-
-
-@pytest.fixture()
-async def client(app: FastAPI) -> AsyncGenerator[AsyncClient, None]:
-    async with AsyncClient(
-        transport=ASGITransport(app=app),  # type: ignore
-        base_url="http://test",
-    ) as client:
-        yield client
+from app.models.movies import Movie
 
 
 @pytest.mark.anyio
 async def test_healthcheck(client: AsyncClient) -> None:
     response = await client.get("/v1/healthcheck")
-    data = response.json()
     assert response.status_code == 200
+    data = response.json()
     assert data["status"] == "available"
     assert data["version"] == version
     assert data["environment"] == "DEVELOPMENT"

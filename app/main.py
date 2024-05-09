@@ -2,9 +2,9 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-# from .database import create_db_and_tables
-from .middleware import RateLimiterMiddleware
-from .routes import router
+# from .internal.database import create_db_and_tables
+from .middlewares import RateLimiterMiddleware
+from .routers import v1
 
 
 @asynccontextmanager
@@ -15,7 +15,7 @@ async def lifespan(_: FastAPI):
 
 def create_app(enable_rate_limiter: bool = True) -> FastAPI:
     app = FastAPI(lifespan=lifespan)
-    app.include_router(router)
+    app.include_router(v1.router)
 
     if enable_rate_limiter:
         app.add_middleware(RateLimiterMiddleware, max_calls=2, period=1)

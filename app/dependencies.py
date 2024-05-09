@@ -5,10 +5,10 @@ from jose import JWTError, jwt
 from sqlmodel import Session, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from .database import engine
-from .env import ALGORITHM, SECRET_KEY
-from .models import User
-from .security import oauth2_scheme
+from .internal.database import engine
+from .internal.env import ALGORITHM, SECRET_KEY
+from .internal.security import oauth2_scheme
+from .models.users import User
 
 
 async def get_session() -> AsyncGenerator[AsyncSession, None]:
