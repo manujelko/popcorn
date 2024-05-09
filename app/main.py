@@ -2,14 +2,14 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from .database import create_db_and_tables
+# from .database import create_db_and_tables
 from .middleware import RateLimiterMiddleware
 from .routes import router
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    await create_db_and_tables()
+    # await create_db_and_tables()
     yield
 
 

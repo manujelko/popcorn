@@ -18,11 +18,31 @@ confirm:
 # DEVELOPMENT
 # ==================================================================================== #
 
+## alembic/init: initialize migrations
+.PHONY: alembic/init
+alembic/init: confirm
+	@echo 'Initializing alembic'
+	alembic init -t async migrations
+
+
+## alembic/new msg=$1: create a new database migration
+.PHONY: alembic/new
+alembic/new:
+	@echo 'Creating a new database revision...: "${msg}"'
+	alembic revision --autogenerate -m "${msg}"
+
+## alembic/upgrade: apply all database migrations
+.PHONY: alembic/upgrade
+alembic/upgrade: confirm
+	@echo 'Running up migrations...'
+	alembic upgrade head
+
+
 ## secret_key: generate secret key
 .PHONY: secret_key
 .PHONY:secret_key
-secret_key:
-	@echo "Generating secret key"
+secret_key: confirm
+	@echo 'Generating secret key'
 	openssl rand -hex 32
 
 
