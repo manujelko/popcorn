@@ -37,6 +37,7 @@ sortedcontainers==2.4.0
 SQLAlchemy==2.0.29
 sqlmodel==0.0.16
 starlette==0.37.2
+structlog==24.1.0
 trio==0.25.0
 types-passlib==1.7.7.20240327
 types-pyasn1==0.6.0.20240402
